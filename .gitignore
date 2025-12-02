@@ -1,0 +1,10 @@
+# FastF1 cache
+.fastf1-cache/
+
+# Python bytecode and artifacts
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+*.venv/
