@@ -15,6 +15,7 @@ class DriverTrace:
     gears: List[int]
     drs: List[int]
     tyres: List[str]
+    distances: List[float]
     sectors: List[tuple]  # (S1, S2, S3)
     lap_numbers: List[int]
     pit_status: List[str]   # "PIT", "OUT", or ""
@@ -35,26 +36,22 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
         if laps.empty:
             continue
 
-        pos_data = laps.get_pos_data()
-        car_data = laps.get_car_data()
+        # Use get_telemetry() to get all data, including distance
+        telemetry_data = laps.get_telemetry()
 
-        if pos_data.empty or car_data.empty:
+        if telemetry_data.empty:
             continue
 
-        pos_data = pos_data.sort_values("SessionTime").reset_index(drop=True)
-        car_data = car_data.sort_values("SessionTime").reset_index(drop=True)
-
-        session_times = pos_data["SessionTime"]
+        session_times = telemetry_data["SessionTime"]
         t0 = session_times.iloc[0]
         times_sec = (session_times - t0).dt.total_seconds().to_numpy()
 
-        car_data = car_data.set_index("SessionTime").reindex(session_times, method="nearest")
-
-        speeds = car_data["Speed"].fillna(0).to_numpy() if "Speed" in car_data else np.zeros(len(session_times))
-        gears = car_data["nGear"].fillna(0).astype(int).to_numpy() if "nGear" in car_data else np.zeros(
+        speeds = telemetry_data["Speed"].fillna(0).to_numpy()
+        distances = telemetry_data["Distance"].fillna(0).to_numpy()
+        gears = telemetry_data["nGear"].fillna(0).astype(int).to_numpy() if "nGear" in telemetry_data else np.zeros(
             len(session_times), dtype=int)
-        drs = car_data["DRS"].fillna(0).astype(int).to_numpy() if "DRS" in car_data else np.zeros(len(session_times),
-                                                                                                 dtype=int)
+        drs = telemetry_data["DRS"].fillna(0).astype(int).to_numpy() if "DRS" in telemetry_data else np.zeros(len(session_times),
+                                                                                                             dtype=int)
 
       
         # --------------------------------------
@@ -68,8 +65,8 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
 
         tyre_series = []
 
-        for i in range(len(pos_data)):
-            t_sample = pos_data["SessionTime"].iloc[i]
+        for i in range(len(telemetry_data)):
+            t_sample = telemetry_data["SessionTime"].iloc[i]
 
             # Find the lap whose LapStartTime is <= timestamp and is the latest
             lap_index = None
@@ -91,8 +88,8 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
         lap_numbers_list = []
         sectors_list = []
 
-        for i in range(len(pos_data)):
-            t_sample = pos_data["SessionTime"].iloc[i]
+        for i in range(len(telemetry_data)):
+            t_sample = telemetry_data["SessionTime"].iloc[i]
 
             # Find lap for this timestamp
             lap_match = laps[(laps["LapStartTime"] <= t_sample)]
@@ -122,8 +119,8 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
         pit_status_list = []
         lap_pit_flags = laps["PitOutTime"].notna() | laps["PitInTime"].notna()
 
-        for i in range(len(pos_data)):
-            t_sample = pos_data["SessionTime"].iloc[i]
+        for i in range(len(telemetry_data)):
+            t_sample = telemetry_data["SessionTime"].iloc[i]
 
             # Find lap for timestamp
             lap_match = laps[laps["LapStartTime"] <= t_sample]
@@ -136,7 +133,7 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
             # OUT (driver retires)
             if i > 10:
                 # fixed condition: if the last 20 positions didn't move much
-                recent = pos_data.iloc[max(0, i - 20):i]["X"]
+                recent = telemetry_data.iloc[max(0, i - 20):i]["X"]
                 if recent.max() - recent.min() < 1:  # car stationary
                     pit_status_list.append("OUT")
                     continue
@@ -151,8 +148,8 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
 
 
 
-        xs = pos_data["X"].to_numpy()
-        ys = pos_data["Y"].to_numpy()
+        xs = telemetry_data["X"].to_numpy()
+        ys = telemetry_data["Y"].to_numpy()
 
         code = session.get_driver(drv)["Abbreviation"]
 
@@ -164,6 +161,7 @@ def load_race_telemetry(year: int, round_number: int) -> Dict[str, DriverTrace]:
             gears=list(gears),
             drs=list(drs),
             tyres=tyre_series,
+            distances=list(distances),
             sectors=sectors_list,
             lap_numbers=lap_numbers_list,
             pit_status=pit_status_list
