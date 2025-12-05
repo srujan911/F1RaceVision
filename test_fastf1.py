@@ -1,16 +1,30 @@
 import fastf1
 
-def main():
-    # Enable caching to .fastf1-cache folder
-    fastf1.Cache.enable_cache(".fastf1-cache")
+fastf1.Cache.enable_cache("f1_cache")
 
-    # Example: 2023 Round 1, Race session
-    session = fastf1.get_session(2023, 1, 'R')  # 'R' = Race
-    session.load()  # Downloads + parses data (first time can take a while)
+# Load the session you used in your replay (change round if needed)
+session = fastf1.get_session(2025, 1, "R")
+session.load(laps=True, telemetry=True)
 
-    print("Event:", session.event['EventName'], session.event['EventDate'])
-    print("Session:", session.name)
-    print("Drivers in session:", session.drivers)
+# pick any driver that exists
+drivers = session.drivers
+print("Drivers:", drivers)
 
-if __name__ == "__main__":
-    main()
+drv = drivers[0]   # pick first driver
+print("Testing driver:", drv)
+
+lap = session.laps.pick_drivers([drv]).iloc[0]
+
+# --- PRINT CAR DATA COLUMNS ---
+car = lap.get_car_data()
+print("\n=== car_data columns ===")
+print(list(car.columns))
+
+# --- PRINT POSITION DATA COLUMNS ---
+pos = lap.get_pos_data()
+print("\n=== pos_data columns ===")
+print(list(pos.columns))
+
+# Show first few rows too
+print("\ncar_data head:\n", car.head())
+print("\npos_data head:\n", pos.head())

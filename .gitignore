@@ -1,3 +1,27 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment folders
+venv/
+.venv/
+env/
+*.env
+
+# FastF1 cache directories
+f1_cache/
+.fastf1-cache/
+
+# IDE and editor configuration
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
 # FastF1 cache
 .fastf1-cache/
 

@@ -3,25 +3,28 @@ import pygame
 pygame.init()
 
 WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 650
+WINDOW_HEIGHT = 700
 
-FONT = pygame.font.SysFont("Arial", 26)
-SMALL = pygame.font.SysFont("Arial", 22)
+FONT = pygame.font.SysFont("Arial", 24, bold=True)
+SMALL_FONT = pygame.font.SysFont("Arial", 20)
 
-BG = (210, 210, 220)
-BTN = (180, 180, 195)
-BTN_HOVER = (160, 160, 180)
-WHITE = (255, 255, 255)
-YELLOW = (240, 200, 60)
-TEXT = (40, 40, 60)
+# --- F1 Themed Colors ---
+C_BG = (15, 15, 22)          # Dark charcoal
+C_TEXT = (240, 240, 240)     # Off-white
+C_BTN = (35, 35, 45)         # Darker button
+C_BTN_HOVER = (55, 55, 65)   # Lighter button on hover
+C_ACCENT_RED = (225, 6, 0)   # F1 Red
+C_BORDER = (80, 80, 90)      # Border for list items
 
 SCROLL_SPEED = 40        # pixels per mouse wheel event
 DEBOUNCE_TIME = 150      # ms to prevent double input
 
 
 def draw_button(screen, rect, text, hover=False):
-    pygame.draw.rect(screen, BTN_HOVER if hover else BTN, rect, border_radius=8)
-    label = FONT.render(text, True, WHITE)
+    """Draws a styled button, changing color on hover."""
+    color = C_BTN_HOVER if hover else C_BTN
+    pygame.draw.rect(screen, color, rect, border_radius=8)
+    label = FONT.render(text, True, C_TEXT)
     screen.blit(label, (
         rect.x + (rect.width - label.get_width()) // 2,
         rect.y + (rect.height - label.get_height()) // 2
@@ -59,22 +62,23 @@ def menu_screen(races_by_year, default_year=None):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()[0]
 
-        screen.fill(BG)
+        screen.fill(C_BG)
 
         # Title
-        title = FONT.render("Select F1 Replay", True, YELLOW)
-        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 40))
+        title = FONT.render("SELECT A RACE", True, C_TEXT)
+        screen.blit(title, (WINDOW_WIDTH // 2 - title.get_width() // 2, 50))
+        pygame.draw.line(screen, C_ACCENT_RED, (200, 90), (400, 90), 3)
 
         # Year label
-        year_label = FONT.render(f"Year: {year}", True, TEXT)
-        screen.blit(year_label, (60, 120))
+        year_label = FONT.render(str(year), True, C_TEXT)
+        screen.blit(year_label, (WINDOW_WIDTH // 2 - year_label.get_width() // 2, 130))
 
         # Year change buttons
-        minus_rect = pygame.Rect(350, 115, 50, 40)
-        plus_rect = pygame.Rect(420, 115, 50, 40)
+        minus_rect = pygame.Rect(WINDOW_WIDTH // 2 - 100, 125, 50, 40)
+        plus_rect = pygame.Rect(WINDOW_WIDTH // 2 + 50, 125, 50, 40)
 
-        draw_button(screen, minus_rect, "-", minus_rect.collidepoint(mouse))
-        draw_button(screen, plus_rect, "+", plus_rect.collidepoint(mouse))
+        draw_button(screen, minus_rect, "<", minus_rect.collidepoint(mouse))
+        draw_button(screen, plus_rect, ">", plus_rect.collidepoint(mouse))
 
         # YEAR CHANGE — with cooldown to avoid double increments
         if click and minus_rect.collidepoint(mouse) and year_cooldown == 0:
@@ -91,8 +95,8 @@ def menu_screen(races_by_year, default_year=None):
 
         # ========== RACE LIST WITH SCROLLING ==========
         races = races_by_year.get(year, [])
-        list_top = 190
-        list_area_height = WINDOW_HEIGHT - list_top - 40
+        list_top = 200
+        list_area_height = WINDOW_HEIGHT - list_top - 50
 
         # Compute max scroll
         max_scroll = max(0, len(races) * 50 - list_area_height)
@@ -104,13 +108,16 @@ def menu_screen(races_by_year, default_year=None):
         y = list_top - scroll_offset
 
         for rnd, name in races:
-            rect = pygame.Rect(80, y, 440, 40)
+            rect = pygame.Rect(60, y, WINDOW_WIDTH - 120, 40)
             hovered = rect.collidepoint(mouse)
 
-            pygame.draw.rect(screen, BTN_HOVER if hovered else BTN, rect, border_radius=8)
+            # Draw list item with a red border on hover
+            pygame.draw.rect(screen, C_BTN, rect, border_radius=6)
+            if hovered:
+                pygame.draw.rect(screen, C_ACCENT_RED, rect, 2, border_radius=6)
 
-            label = SMALL.render(f"Round {rnd}: {name}", True, WHITE)
-            screen.blit(label, (rect.x + 10, rect.y + 8))
+            label = SMALL_FONT.render(f"R{rnd:02d}  |  {name}", True, C_TEXT)
+            screen.blit(label, (rect.x + 15, rect.y + 9))
 
             if hovered and click:
                 pygame.time.wait(120)
