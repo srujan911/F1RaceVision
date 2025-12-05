@@ -6,6 +6,7 @@ import fastf1
 import os
 import pandas
 import bisect
+import numpy
 from concurrent.futures import ThreadPoolExecutor
 from core.telemetry_loader import DriverTrace
 
@@ -116,39 +117,64 @@ def compute_ranking_data(traces: Dict[str, DriverTrace], indices: Dict[str, int]
         idx = indices.get(code, 0)
         if idx >= len(tr.distances):
             continue
+
+        status = ""
+        if hasattr(tr, 'pit_status') and idx < len(tr.pit_status):
+            status = tr.pit_status[idx]
+
         ranking.append({
             "code": code,
             "progress": tr.distances[idx],
             "lap": tr.lap_numbers[idx],
+            "time": tr.times[idx],
             "current_tyre": tr.tyres[idx],
-            "speed": tr.speeds[idx],
-            "trace": tr
+            "trace": tr,
+            "status": status
         })
 
-    ranking.sort(key=lambda x: x["progress"], reverse=True)
+    # Sort by lap number first, then progress on the lap
+    ranking.sort(key=lambda x: (x["lap"], x["progress"]), reverse=True)
 
     if not ranking:
         return []
 
     out = []
+    leader = ranking[0]
+    gap_text = ""
+    if leader["status"] == "InPit":
+        gap_text = "PIT"
+    elif leader["status"] == "Out":
+        gap_text = "OUT"
+
     out.append({
         "position": 1,
-        "code": ranking[0]["code"],
-        "gap_to_ahead": "",
-        "current_tyre": ranking[0]["current_tyre"],
-        "trace": ranking[0]["trace"]
+        "code": leader["code"],
+        "gap_to_ahead": gap_text,
+        "current_tyre": leader["current_tyre"],
+        "trace": leader["trace"]
     })
 
     for i in range(1, len(ranking)):
         ahead = ranking[i - 1]
         cur = ranking[i]
-        dgap = ahead["progress"] - cur["progress"]
-        speed_mps = max(10, ahead["speed"] / 3.6)
-        tgap = dgap / speed_mps
+
+        if cur["status"] == "Out":
+            gap_text = "OUT"
+        elif cur["status"] == "InPit":
+            gap_text = "PIT"
+        elif ahead["lap"] > cur["lap"]:
+            lap_diff = ahead["lap"] - cur["lap"]
+            gap_text = f"+{lap_diff} Lap" if lap_diff == 1 else f"+{lap_diff} Laps"
+        else:
+            # Accurately find the time when the car ahead was at the current car's position
+            time_ahead_at_cur_pos = numpy.interp(cur["progress"], ahead["trace"].distances, ahead["trace"].times)
+            time_gap = cur["time"] - time_ahead_at_cur_pos
+            gap_text = f"+{time_gap:.1f}"
+
         out.append({
             "position": i + 1,
             "code": cur["code"],
-            "gap_to_ahead": f"+{tgap:.2f}",
+            "gap_to_ahead": gap_text,
             "current_tyre": cur["current_tyre"],
             "trace": cur["trace"]
         })
