@@ -9,6 +9,7 @@ F1 Race Vision brings Formula 1 telemetry to life by replaying races with accura
 Inspired by Tom Shaw’s race replay project, this version is built fully from scratch, focusing on performance, precision, and an immersive visualization experience.
 
 🚀 Key Features
+
 🟦 Real-Time Race Replay
 
 Cars move according to live telemetry (X/Y coordinates).
@@ -57,13 +58,21 @@ Debug overlays for development.
 
 📂 Project Structure
 /F1-Race-Vision
+
 │── main.py
+
 │── replay.py
+
 │── track_renderer.py
+
 │── telemetry_loader.py
+
 │── utils.py
+
 │── assets/
+
 │── README.md
+
 
 
 🛠️ Tech Stack
