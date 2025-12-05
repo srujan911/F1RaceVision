@@ -1,99 +1,126 @@
-# F1 Race Vision
+🏎️ F1 Race Vision
 
-F1 Race Vision is a Python-based desktop application that provides a sophisticated 2D replay visualization of Formula 1 races. Using the `fastf1` library to fetch official telemetry data and `pygame` for the graphical interface, it allows users to re-watch races with detailed insights into driver performance, track positions, and timing information.
+A real-time Formula 1 race replay simulator built using Python, Pygame, and FastF1, designed to visualize telemetry data and recreate dynamic Grand Prix action.
 
-!F1 Race Vision Screenshot *(Screenshot placeholder)*
+📌 Overview
 
----
+F1 Race Vision brings Formula 1 telemetry to life by replaying races with accurate car positions, live timing gaps, and driver-specific data — all rendered on a dynamically generated track layout.
 
-## Features
+Inspired by Tom Shaw’s race replay project, this version is built fully from scratch, focusing on performance, precision, and an immersive visualization experience.
 
--   **Interactive Race Menu**: A sleek, F1-themed UI to select a race from any available year.
--   **2D Track Visualization**: Displays the circuit layout with all cars represented as colored dots moving in real-time.
--   **Live Leaderboard**: A continuously updated ranking of drivers, showing position, name, and current tyre compound.
--   **Detailed Telemetry Panel**: Select any driver to view their real-time speed, gear, and DRS status.
--   **Timing Information**: Displays the current lap number, total laps, and sector times for the selected driver.
--   **Playback Controls**:
-    -   Play, pause, and adjust playback speed.
-    -   Seek forward or backward in the race timeline.
-    -   Easily switch between drivers to follow the action.
--   **Data Caching**: Utilizes `fastf1`'s caching mechanism to store telemetry data locally, ensuring fast loading times for subsequent viewings.
+🚀 Key Features
+🟦 Real-Time Race Replay
 
----
+Cars move according to live telemetry (X/Y coordinates).
 
-## Requirements
+Smooth interpolation for frame-by-frame motion.
 
--   Python 3.8+
--   `pygame`
--   `fastf1`
+🟦 Live Leaderboard
 
----
+Displays real-time positions and sub-second time gaps.
 
-## Installation & Usage
+Updates automatically as the race progresses.
 
-1.  **Clone the repository:**
-    
-    ```bash
-    git clone <your-repository-url>cd F1RaceVision
-    ```
-    
-2.  **Install the required Python libraries:**
-    
-    ```bash
-    pip install pygame fastf1
-    ```
-    
-3.  **Run the application:**
-    
-    ```bash
-    python main.py
-    ```
-    
-4.  **Select a Race**: Use the on-screen menu to choose a year and a Grand Prix. The application will then download and cache the necessary data (this may take a moment on the first run for a specific race).
-    
-5.  **Enjoy the replay!**
-    
+🟦 Driver Telemetry Panel
 
----
+Speed
 
-## Replay Controls
+Gear
 
-Key
+DRS Status
 
-Action
+Tyre Compound
 
-`Spacebar`
+Car Color / Driver Initials
 
-Play / Pause the replay
+🟦 Dynamic Track Rendering
 
-`Up Arrow`
+Circuit layout generated directly from coordinates.
 
-Increase playback speed (up to 8x)
+Scaled & centered to fit display size.
 
-`Down Arrow`
+Clean and accurate visual representation.
 
-Decrease playback speed (down to 0.25x)
+🟦 Race Selection Menu
 
-`Right Arrow`
+Load any race from recent F1 seasons.
 
-Seek forward 5 seconds
+Automatically retrieves FastF1 cached or downloaded data.
 
-`Left Arrow`
+🟦 Optimized Rendering Engine
 
-Seek backward 5 seconds
+Multi-threaded data loading.
 
-`]` (Right Bracket)
+Efficient update loops using Pygame.
 
-Select the next driver in the ranking
+Debug overlays for development.
 
-`[` (Left Bracket)
+📂 Project Structure
+/F1-Race-Vision
+│── main.py
+│── replay.py
+│── track_renderer.py
+│── telemetry_loader.py
+│── utils.py
+│── assets/
+│── README.md
 
-Select the previous driver in the ranking
+🛠️ Tech Stack
+Component	Technology
+Language	Python
+Visualization	Pygame
+Telemetry Provider	FastF1
+Tools	Pandas, Numpy, Threading
+📦 Installation
+1️⃣ Clone the repository
+git clone https://github.com/yourusername/F1-Race-Vision.git
+cd F1-Race-Vision
 
----
+2️⃣ Create a virtual environment
+python -m venv venv
+source venv/bin/activate   # MacOS/Linux
+venv\Scripts\activate      # Windows
 
-## Project Structure
+3️⃣ Install dependencies
+pip install -r requirements.txt
 
-```
-F1RaceVision/├── .fastf1-cache/      # Stores cached FastF1 telemetry data├── core/│   └── telemetry_loader.py # Handles fetching and parsing race data├── ui/│   ├── menu.py         # Implements the race selection menu│   └── replay.py       # Implements the main replay visualization screen└── main.py             # Main application entry point
-```
+4️⃣ Run the program
+python main.py
+
+📥 FastF1 Cache Setup
+
+FastF1 downloads heavy telemetry files the first time you load a session.
+To speed up future loads, the data is cached automatically in:
+
+/YourUser/AppData/Local/Temp/FastF1
+
+
+You can delete old seasons or pre-download races if needed.
+
+📸 Screenshots (Add your images here)
+
+Replace these placeholder lines with real images.
+
+Race replay view
+
+Live leaderboard
+
+Driver telemetry overlay
+
+Track rendering
+
+🧠 What I Learned
+
+Telemetry parsing & data pipelines
+
+Real-time rendering & interpolation
+
+Performance optimization with threads
+
+Scaling coordinate systems to screens
+
+Building game-style simulation loops
+
+🙌 Credits
+
+A huge thanks to Tom Shaw, whose race replay project inspired this one.
