@@ -65,6 +65,7 @@ Debug overlays for development.
 │── assets/
 │── README.md
 
+
 🛠️ Tech Stack
 Component	Technology
 Language	Python
@@ -73,7 +74,7 @@ Telemetry Provider	FastF1
 Tools	Pandas, Numpy, Threading
 📦 Installation
 1️⃣ Clone the repository
-git clone https://github.com/yourusername/F1-Race-Vision.git
+git clone https://github.com/srujan911/F1-Race-Vision.git
 cd F1-Race-Vision
 
 2️⃣ Create a virtual environment
@@ -97,9 +98,14 @@ To speed up future loads, the data is cached automatically in:
 
 You can delete old seasons or pre-download races if needed.
 
-📸 Screenshots (Add your images here)
+<img width="602" height="732" alt="Screenshot 2025-12-05 132207" src="https://github.com/user-attachments/assets/e373b6c5-5c01-44b7-9e28-f01a8bc77053" />
+<img width="1402" height="932" alt="Screenshot 2025-12-05 135751" src="https://github.com/user-attachments/assets/14c78bd7-17aa-44ba-a4ae-3472d7124b26" />
+<img width="1402" height="932" alt="Screenshot 2025-12-05 153519" src="https://github.com/user-attachments/assets/69d2c459-f27c-4452-afa6-79c6c6bb77f4" />
+<img width="1402" height="932" alt="Screenshot 2025-12-05 155018" src="https://github.com/user-attachments/assets/a790b6f2-2c00-45a4-8d38-3f64be9aea53" />
 
-Replace these placeholder lines with real images.
+
+
+
 
 Race replay view
 
